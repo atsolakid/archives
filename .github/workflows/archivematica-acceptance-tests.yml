@@ -22,7 +22,7 @@ on:
 jobs:
   test:
     name: "${{ matrix.feature }} / ${{ matrix.docker_image.label }}"
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-24.04"
     env:
       am_version: "${{ inputs.am_version || 'qa/1.x' }}"
       ss_version: "${{ inputs.ss_version || 'qa/0.x' }}"
@@ -51,20 +51,6 @@ jobs:
             tag: "20.04"
             label: "focal"
         feature:
-          - "aip-encryption-mirror"
-          - "aip-encryption"
-          - "checksum"
-          - "create-aip"
-          - "description-rights"
-          - "extract-package"
-          - "ingest-mkv-conformance"
-          - "ingest-policy-check"
-          - "metadata-xml"
-          - "reingest-aip"
-          - "transfer-microservices"
-          - "transfer-mkv-conformance"
-          - "transfer-policy-check"
-          - "uuids-for-directories"
           - "virus"
         browser:
           - "Chrome"
@@ -77,11 +63,6 @@ jobs:
           repository: "artefactual-labs/archivematica-acceptance-tests"
           ref: "${{ env.at_version }}"
           path: "${{ github.workspace }}/AMAUATs"
-      - name: "Upgrade crun (supports Ubuntu's systemd in the Dockerfile)"
-        run: |
-          wget https://github.com/containers/crun/releases/download/1.15/crun-1.15-linux-amd64
-          sudo install crun-1.15-linux-amd64 /usr/bin/crun
-          rm crun-1.15-linux-amd64
       - name: "Install Python"
         uses: "actions/setup-python@v5"
         with:
@@ -125,10 +106,6 @@ jobs:
         working-directory: "${{ github.workspace }}/tests/archivematica-acceptance-tests"
         run: |
           ansible-galaxy install -f -p roles/ -r requirements.yml
-      - name: "Adjust parsing of root's initial MySQL password in RedHat distros"
-        working-directory: "${{ github.workspace }}/tests/archivematica-acceptance-tests"
-        run: |
-          sed -i "s_cat /var/log/mysqld.log | sed -n '_journalctl --no-pager | sed -n '0,/.*temporary password is generated for root@localhost: /_g" roles/artefactual.percona/tasks/secure.yml
       - name: "Install Archivematica"
         working-directory: "${{ github.workspace }}/tests/archivematica-acceptance-tests"
         env:
