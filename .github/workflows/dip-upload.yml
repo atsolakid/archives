@@ -29,6 +29,10 @@ jobs:
       atom_version: "${{ inputs.atom_version || 'qa/2.x' }}"
       python_version: "3.10"
     steps:
+      - name: "Uninstall MySQL"
+        run: |
+          sudo apt-get remove --purge "mysql*"
+          sudo rm -rf /var/lib/mysql* /etc/mysql
       - name: "Check out the code"
         uses: "actions/checkout@v4"
       - name: "Install Python"
